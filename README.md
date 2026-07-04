@@ -1,4 +1,5 @@
 # Financial-modelling-portfolio
+---
 This repository contains 120 finance related mini-cases that were solved by myself during Finance specialisation I took in my university. The mini-cases are related to different topics in investment theory, financial valuation, corporate finance, and risk management. Mostly, they were done in Excel, but also on R, LaTeX or simply written by hand.
 In this repo, you can find the cases themselves and the task descriptions. Additionally, for the quick check of my work's level I created a file with my 10 best mini-cases done in Excel.
 ---
