@@ -1,0 +1,129 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{relsize}
+\usepackage{amssymb}
+\usepackage{setspace}
+\doublespacing
+\begin{document}
+\title{Proof of M.C.4.4\\[0.5em] \large Course IV -- Risk Management}
+\author{Oleh Burdukov 12232841}
+\maketitle
+\textbf{Proposition:}
+
+\begin{center}
+$VAR(P/L_{fix}) < VAR(P/L_{Float}) \Leftrightarrow \mathlarger{\mathlarger{\rho}}_{EBIT,I_{Float}} < \frac{\sigma_{I_{Float}}}{2\sigma_{EBIT}}$
+\end{center}
+
+\bigskip
+
+\begin{center}
+PART I
+\end{center}
+
+\begin{center}
+\textit{If} $VAR(P/L_{fix}) < VAR(P/L_{Float})$, \textit{then} $\mathlarger{\mathlarger{\rho}}_{EBIT,I_{Float}} < \frac{\sigma_{I_{Float}}}{2\sigma_{EBIT}}$
+\end{center}
+\bigskip
+
+\textbf{\textit{Proof (Direct):}} Suppose it holds
+
+\begin{center}
+$VAR(P/L_{fix}) < VAR(P/L_{Float})$
+\end{center}
+
+From the unit materials, we know that
+
+\begin{center}
+$VAR(P/L_{fix}) = VAR(EBIT)$ and
+$VAR(P/L_{Float}) = VAR(EBIT) + VAR(I_{I_{Float}}) - 2Cov(EBIT,I_{Float})$
+\end{center}
+
+Substituting both sides, we have
+
+\begin{center}
+$VAR(EBIT) < VAR(EBIT) + VAR(I_{Float}) - 2Cov(EBIT,I_{Float})$.
+\end{center}
+
+Now, observe the correlation formula
+
+\begin{center}
+$\mathlarger{\mathlarger{\rho}}_{X,Y} = \frac{Cov(X,Y)}{\sigma_{X}\sigma_{Y}}$
+\end{center}
+
+Rearranging for Cov(X,Y) and plugging it into the inequality we obtain
+
+\begin{center}
+$VAR(EBIT) < VAR(EBIT) + VAR(I_{Float}) - 2\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}} \mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}}$
+\end{center}
+
+Let's now rearrange the inequality
+
+\begin{center}
+$VAR(EBIT) - VAR(EBIT) < VAR(I_{Float})- 2\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}}\mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}}$
+
+$2\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}}\mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}} < VAR(I_{Float})$
+
+\bigskip
+
+$\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}} < \frac{VAR(I_{Float})}{2\mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}}}$
+
+\end{center}
+
+Using the definition of variance $VAR(X) = \mathlarger{\mathlarger{\sigma}}_{X}^2$ we simplify it to the following result
+
+\begin{center}
+$\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}} < \frac{\mathlarger{\mathlarger{\sigma}}_{I_{Float}}^2}{2\mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}}}$
+
+\bigskip
+
+$\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}} < \frac{\mathlarger{\mathlarger{\sigma}}_{I_{Float}}}{2\mathlarger{\mathlarger{\sigma}}_{EBIT}}$
+\end{center}
+
+Essentially, this result allows us to estimate the boundary value for volatility of the floating rate $\mathlarger{\mathlarger{\sigma}}_{I_{Float}}$ , by which we decide whether to choose fixed rate instrument or floating rate instrument in order to minimize the volatility of pre-tax P/L ratio. If $\mathlarger{\mathlarger{\sigma}}_{I_{Float}}$ is greater than this value, we choose fixed rate instrument
+
+\vspace{1cm}
+
+\begin{center}
+PART II
+
+
+\end{center}
+
+\begin{center}
+
+If $\mathlarger{\mathlarger{\rho}}_{EBIT,I_{Float}} < \frac{\sigma_{I_{Float}}}{2\sigma_{EBIT}}$, then $VAR(P/L_{fix}) < VAR(P/L_{Float})$
+
+\end{center}
+
+\textbf{\textit{Proof (Direct):}} Conversely, suppose it holds that 
+
+\begin{center}
+$\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}} < \frac{\mathlarger{\mathlarger{\sigma}}_{I_{Float}}}{2\mathlarger{\mathlarger{\sigma}}_{EBIT}}$
+\end{center}
+
+By the following rearrangements and substitutions using previous results we get
+
+\begin{center}
+
+$\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}} < \frac{VAR(I_{Float})}{2\mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}}}$
+\bigskip
+
+$2\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}}\mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}} < VAR(I_{Float})$
+\bigskip
+
+$VAR(EBIT) - VAR(EBIT) < VAR(I_{Float})- 2\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}}\mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}}$
+\bigskip
+
+$VAR(EBIT) < VAR(EBIT) + VAR(I_{Float}) - 2\mathlarger{\mathlarger{\rho}}_{EBIT, I_{Float}} \mathlarger{\mathlarger{\sigma}}_{EBIT} \mathlarger{\mathlarger{\sigma}}_{I_{Float}}$
+\bigskip
+
+$VAR(EBIT) < VAR(EBIT) + VAR(I_{Float}) - 2Cov(EBIT,I_{Float})$
+\bigskip
+
+$VAR(P/L_{fix}) < VAR(P/L_{Float})$
+\bigskip
+
+\end{center}
+
+\hfill $\square$
+
+\end{document}

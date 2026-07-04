@@ -1,0 +1,290 @@
+---
+title: "Unit 3 MCs"
+output:
+    html_document:
+        toc: true
+        toc_float: true
+---
+# Mini Case 3.1
+```{r}
+rm(list = ls())
+load("supplementary docs/Mini_Case_3_1.RData")
+ls()
+```
+## Task 1
+```{r}
+PLoss <- numeric(length(realizations))
+for(k in 1:length(realizations)){
+    def_ind <- numeric(length(notionals))
+    Loss <- numeric(length(notionals))
+    for(i in 1:length(pds)){
+        def_ind[i] <- as.numeric(realizations[k,i] <= pds[i])
+        Loss[i] <- def_ind[i]*notionals[i]*1
+    }
+    PLoss[k] <- sum(Loss)
+}
+print(head(PLoss)) # Creates and displays 3000 simulations of portfolio losses
+```
+```{r}
+ELR <- mean(PLoss) # Estimates the mean value of the portfolio loss rate across all simulations
+ELR
+```
+```{r}
+VaR <- quantile(PLoss, probs = 0.99, type = 1)
+VaR # Estimates the 99% VaR of the portfolio loss distribution across all simulations
+```
+## Task 2
+```{r}
+PLoss60 <- numeric(length(realizations))
+for(k in 1:length(realizations)){
+    def_ind60 <- numeric(length(notionals))
+    Loss60 <- numeric(length(notionals))
+    for(i in 1:length(pds)){
+        def_ind60[i] <- as.numeric(realizations[k,i] <= pds[i])
+        Loss60[i] <- def_ind60[i]*notionals[i]*0.6
+    }
+    PLoss60[k] <- sum(Loss60)
+}
+print(head(PLoss60)) #stimates the portfolio loss rate across all simulations under the assumption of a 60% rate of LGD
+```
+```{r}
+VaR60 <- quantile(PLoss60, probs = 0.99, type = 1)
+VaR60 #Estimates the 99% VaR of the portfolio loss distribution across all simulations under the assumption of a 60% rate of LGD
+```
+# Mini Case 3.2
+```{r}
+rm(list = ls())
+# Let's first of all assign all variables
+N <- 500
+V <- 2000
+EAD <- 1
+PD <- 0.0436
+LGD <- 0.4
+# Once we define variables, we compute the ELR of portfolio
+PotentialLoss <- V*EAD*LGD # Potential loss per asset
+PLoss <- PotentialLoss*N # Potential loss in case of default of the whole portfolio
+ELR <- PD*PLoss # Expected loss rate of the portfolio
+ELR
+```
+```{r}
+Variance_Loss <- PD*(1-PD)*PotentialLoss^2
+Variance_Loss # Variance of one asset
+PVariance <- Variance_Loss*N
+PVariance # Variance of the total loss of the portfolio
+Pstdev <- sqrt(PVariance)
+Pstdev # Standard deviation of the total loss of the portfolio
+```
+## Extra exercise part
+```{r}
+corr <- 0.008
+# It seems the assumptions of the mini case do not imply computation by the first alternative from the lecture notes, which is for the case of statistically dependent defaults. Hence, we require another approach.
+ELR
+# The mean value is going to be the same, as the notional values, EAD, LGD and PD did not change. Perhaps, the dependency between defaults implies another formula for their variance. First of all, we know that the standard deviation is equal for every asset. 
+```
+```{r}
+# We know the portfolio has 500 assets. In the formula for variance we need to consider that there are N*(N-1) covariances to estimate.
+Pstdev_corr_def <- sqrt(N*Variance_Loss + N*(N-1)*corr*Variance_Loss)
+Pstdev_corr_def # Standard deviation of the total loss of the portfolio under the assumption of correlated defaults
+```
+# Mini Case 3.3
+```{r}
+rm(list = ls())
+load("supplementary docs/Mini_Case_3_3.RData")
+ls()
+```
+```{r}
+LGD <- 0.7
+EAD <- 1
+PDs <- c(0.4295, 0.0116, 0.0028, 0.0001, 0.0028, 0.1548, 0.4295, 0.4295, 0.1548, 0.0001)
+PLoss <- numeric(5000)
+set.seed(123)
+for(k in 1:length(PLoss)) {
+    Z <- rnorm(length(notionals))
+    Y <- cholesky%*%Z
+    Dtd <- numeric(length(notionals))
+    def_ind <- numeric(length(notionals))
+    Loss <- numeric(length(notionals))
+    for(i in 1:length(notionals)) {
+        Dtd[i] <- qnorm(PDs[i])
+        if(Y[i] <= Dtd[i]) {
+            def_ind[i] <- 1
+        } else {
+            def_ind[i] <- 0
+        }
+        Loss[i] <- def_ind[i]*EAD*LGD*notionals[i]
+    }
+    PLoss[k] <- sum(Loss)
+}
+print(head(PLoss)) # Simulates 5000 realizations of the portfolio loss rate under the assumption of a 70% rate of LGD and correlated defaults
+```
+```{r}
+# Now we estimate the ELR of the portfolio
+mean(PLoss)
+```
+```{r}
+# 1% VaR is then as follows
+quantile(PLoss, probs = 0.99)
+```
+# Mini Case 3.4
+```{r}
+rm(list = ls())
+load("supplementary docs/Mini_Case_3_4.RData")
+ls()
+```
+```{r}
+EAD <- 1
+LGD <- 0.7
+stdev_i <- 0.3
+stdev_M <- 0.2
+PLoss <- numeric(2500)
+set.seed(67)
+for(k in 1:length(PLoss)) {
+    Y <- rnorm(length(notionals)+1)
+    Dtd <- numeric(length(notionals))
+    W_i <- numeric(length(notionals))
+    Z <- numeric(length(notionals))
+    def_ind <- numeric(length(notionals))
+    Loss <- numeric(length(notionals))
+    for(i in 1:length(notionals)) {
+        Dtd[i] <- qnorm(pds[i])
+        W_i[i] <- asset_betas[i]*stdev_M/stdev_i
+        Z[i] <- W_i[i]*Y[length(notionals)+1]+(1-W_i[i])*Y[i]
+        if(Z[i] <= Dtd[i]) {
+            def_ind[i] <- 1
+        } else {
+            def_ind[i] <- 0
+        }
+        Loss[i] <- def_ind[i]*EAD*LGD*notionals[i]
+    }
+    PLoss[k] <- sum(Loss)
+} # 2500 Monte-Carlo simulations of portfolio losses by the factor model method
+
+print(head(PLoss)) # The result of 2500 Monte-Carlo simulations
+```
+
+```{r}
+ELR <- mean(PLoss)
+ELR # The expected loss rate
+```
+
+```{r}
+VaR <- quantile(PLoss, probs = 0.99)
+VaR # The 99% value at risk
+```
+# Mini Case 3.5
+```{r}
+rm(list = ls())
+```
+```{r}
+notionals <- rep(2000, times = 500)
+EAD <- 1
+LGD <- 0.6
+PD <- 0.0436
+DS <- 0.2
+set.seed(100)
+notionals_indassets <- notionals[1:(length(notionals)*DS)]
+PLoss <- numeric(3000)
+for(k in 1:length(PLoss)) {
+    def_ind <- numeric(length(notionals_indassets))
+    Loss <- numeric(length(notionals_indassets))
+    U <- runif(length(notionals_indassets), min = 0, max = 1)
+    for(i in 1:length(notionals_indassets)) {
+        if(U[i] <= PD) {
+            def_ind[i] <- 1
+        } else {
+            def_ind[i] <- 0
+        }
+        Loss[i] <- def_ind[i]*EAD*LGD*notionals_indassets[i]
+    }
+    PLoss[k] <- sum(Loss)
+    PLoss[k] <- PLoss[k]/DS
+} # 3000 Monte-Carlo simulations of portfolio losses with application of diversity score
+
+print(head(PLoss)) # The result of 3000 Monte-Carlo simulations of portfolio losses with application of diversity score
+```
+```{r}
+ELR <- mean(PLoss)
+ELR # ELR of the protfolio
+```
+```{r}
+VaR <- quantile(PLoss, probs = 0.99)
+VaR # 99% VaR of the portfolio
+```
+# Mini Case 3.6
+```{r}
+rm(list = ls())
+load("supplementary docs/Mini_Case_3_6.RData")
+ls()
+```
+## Task 1
+```{r}
+EAD <- 1
+PLoss <- numeric(1000)
+set.seed(67)
+for(k in 1:length(PLoss)) {
+    LGD <- runif(1, min = 0, max = 1)
+    U <- runif(length(pds), min = 0, max = 1)
+    def_ind <- numeric(length(pds))
+    Loss <- numeric(length(pds))
+    for(i in 1:length(pds)) {
+        if(U[i] <= pds[i]) {
+            def_ind[i] <- 1
+        } else {
+            def_ind[i] <- 0
+        }
+        Loss[i] <- def_ind[i]*LGD*EAD*notionals[i]
+    }
+    PLoss[k] <- sum(Loss)
+} # Monte_Carlo simulation of portfolio losses
+
+print(head(PLoss))
+```
+```{r}
+ELR <- mean(PLoss)
+ELR # Expected loss rate of the portfolio
+```
+```{r}
+VaR <- quantile(PLoss, probs = 0.95)
+VaR # 95% Value at Risk
+```
+## Task 2
+```{r}
+VaR_series <- numeric(1000)
+set.seed(67)
+for(w in 1:length(VaR_series)) {
+    EAD <- 1
+    PLoss <- numeric(1000)
+    for(k in 1:length(PLoss)) {
+        LGD <- runif(1, min = 0, max = 1)
+        U <- runif(length(pds), min = 0, max = 1)
+        def_ind <- numeric(length(pds))
+        Loss <- numeric(length(pds))
+        for(i in 1:length(pds)) {
+            if(U[i] <= pds[i]) {
+                def_ind[i] <- 1
+            } else {
+                def_ind[i] <- 0
+            }
+            Loss[i] <- def_ind[i]*LGD*EAD*notionals[i]
+        }
+        PLoss[k] <- sum(Loss)
+    }
+    VaR_series[w] <- quantile(PLoss, probs = 0.95)
+} # 1000 Monte-Carlo simulations with estimation of 95% Value at Risk in every simulation
+
+print(head(VaR_series))
+```
+## Task 3
+```{r}
+hist(VaR_series, 
+     breaks = 30, 
+     col = "skyblue", 
+     border = "white",
+     main = "Histogram of Monte Carlo VaR Estimates",
+     xlab = "Value at Risk (VaR)", 
+     ylab = "Frequency") # histogram of 1000 Value at Risk estimations by means of the Monte-Carlo simulations
+```
+```{r}
+MonteCarloError <- sd(VaR_series)
+MonteCarloError # Monte-Carlo error of the estimation of 95% VaR by means of the Monte-Carlo method
+```
